@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "Air Seeder Field Toolkit · Independent",
+  "short_name": "Field Toolkit",
+  "description": "Offline field estimates for seeding rates, cart run limits, field time and meter catch tests.",
+  "lang": "en",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f5f2",
+  "theme_color": "#c2242a",
+  "icons": [
+    {
+      "src": "./assets/app-icon.png",
+      "sizes": "200x200",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

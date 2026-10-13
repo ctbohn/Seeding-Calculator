@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- THESIS: A field worksheet turns seeding inputs into decisions; it refuses unsupported equipment defaults.
+       OWN-WORLD: Väderstad yellow, charcoal, deep green, and red on a bright worksheet with the official mark.
+       STORY: Enter verified field and product values, then read a traceable estimate in the same units.
+       FIRST VIEWPORT: A compact Rates worksheet leads with one calculator; secondary tools expand on demand and three tabs stay fixed below.
+       FORM: Operate; a phone-first field-service worksheet with source-backed bin allocation and a Väderstad red/yellow signal system. -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#c2242a">
+  <meta name="description" content="Independent offline field calculations for seeding rates, cart run limits, field time, and meter catch tests.">
+  <title>Air Seeder Field Toolkit</title>
+  <link rel="icon" href="./assets/app-icon.png" type="image/png">
+  <link rel="apple-touch-icon" href="./assets/app-icon.png">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand-band">
+      <a class="brand-lockup" href="./" aria-label="Air Seeder Field Toolkit home">
+        <img src="./assets/vaderstad-logo.svg" alt="Väderstad">
+      </a>
+      <div class="brand-caption">
+        <span class="brand-title">AIR SEEDER FIELD TOOLKIT</span>
+        <span class="independent-tag">INDEPENDENT TOOL</span>
+      </div>
+      <button class="install-button" id="install-button" type="button" hidden>Install</button>
+    </div>
+    <div class="status-band">
+      <span id="connection-status" class="connection-status" role="status">Ready to calculate</span>
+      <span class="status-divider" aria-hidden="true"></span>
+      <span class="status-detail">Independent field tool · offline ready</span>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <section id="panel-rates" class="tab-panel" role="tabpanel" aria-labelledby="tab-rates">
+      <div class="screen-heading">
+        <div>
+          <h1>Rates</h1>
+          <p>Convert seeding rates and total product.</p>
+        </div>
+      </div>
+
+      <div class="worksheet-grid">
+        <section class="worksheet-section rate-converter">
+          <div class="section-heading">
+            <div>
+              <h2>Seeding-rate conversion</h2>
+              <p>Use the thousand kernel weight (TKW) for this seed lot.</p>
+            </div>
+          </div>
+          <label class="field conversion-direction-field">
+            <span>Convert</span>
+            <select id="conversion-direction" data-persist>
+              <option value="to-seeds">Product rate → seed count</option>
+              <option value="to-product">Seed count → product rate</option>
+            </select>
+          </label>
+          <div class="control-row">
+            <label class="field">
+              <span class="field-topline"><span id="conversion-value-label">Product rate</span><button class="unit-toggle" id="conversion-unit" type="button" data-unit-toggle data-units="lb/ac|kg/ha" data-converts="conversion-value:rate" data-persist value="lb/ac">lb/ac</button></span>
+              <input id="conversion-value" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Enter rate">
+            </label>
+            <label class="field">
+              <span id="conversion-factor-label">TKW (g / 1,000 seeds)</span>
+              <input id="conversion-factor" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Enter TKW">
+            </label>
+          </div>
+          <div class="result-strip" aria-live="polite">
+            <span id="conversion-result-label">Seed rate</span>
+            <strong id="conversion-result">Enter both values</strong>
+          </div>
+        </section>
+
+        <details class="worksheet-section secondary-tool">
+          <summary class="tool-summary"><span>lb/ac ↔ kg/ha conversion</span><span class="disclosure-label">Open</span></summary>
+          <p class="tool-intro">Convert between pounds per acre and kilograms per hectare.</p>
+          <label class="field">
+            <span class="field-topline"><span>Rate to convert</span><button class="unit-toggle" id="mass-rate-unit" type="button" data-unit-toggle data-units="lb/ac|kg/ha" data-converts="mass-rate-value:rate-mass" data-persist value="lb/ac">lb/ac</button></span>
+            <input id="mass-rate-value" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Enter rate">
+          </label>
+          <div class="result-strip" aria-live="polite">
+            <span id="mass-rate-result-label">Equivalent rate</span>
+            <strong id="mass-rate-result">Enter a rate</strong>
+          </div>
+        </details>
+
+        <details class="worksheet-section secondary-tool">
+          <summary class="tool-summary"><span>Product needed for a field</span><span class="disclosure-label">Open</span></summary>
+          <p class="tool-intro">Estimate total product and seed count for a field.</p>
+          <label class="field">
+            <span class="field-topline"><span>Field area</span><button class="unit-toggle" id="total-area-unit" type="button" data-unit-toggle data-units="ac|ha" data-converts="total-area-value:area" data-persist value="ac">ac</button></span>
+            <input id="total-area-value" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Enter area">
+          </label>
+          <div class="control-row">
+            <label class="field">
+              <span class="field-topline"><span>Application rate</span><button class="unit-toggle" id="total-rate-unit" type="button" data-unit-toggle data-units="lb/ac|kg/ha" data-converts="total-rate-value:rate-mass" data-persist value="lb/ac">lb/ac</button></span>
+              <input id="total-rate-value" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Enter rate">
+            </label>
+          </div>
+          <label class="field">
+            <span id="total-seed-factor-label">Optional TKW (g / 1,000 seeds)</span>
+            <input id="total-seed-factor" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Leave blank to skip seed total">
+          </label>
+          <div class="result-strip result-strip-stack" aria-live="polite">
+            <span id="total-result-label">Product needed</span>
+            <strong id="total-result">Enter area and rate</strong>
+            <small id="total-seed-result"></small>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="panel-bins" class="tab-panel" role="tabpanel" aria-labelledby="tab-bins" hidden>
+      <div class="screen-heading">
+        <div>
+          <h1>Bins</h1>
+          <p>Plan product assignments and cart run limits.</p>
+        </div>
+      </div>
+
+      <aside class="source-notice">
+        <div>
+          <strong>Published volumes load by cart model.</strong>
+          <span>Product rates, bulk densities and fill factors are your inputs.</span>
+        </div>
+      </aside>
+
+      <section class="worksheet-section cart-setup">
+        <div class="section-heading">
+          <div>
+            <h2>Cart identification</h2>
+            <p>Published capacities load from Väderstad's technical table.</p>
+          </div>
+        </div>
+        <div class="control-row">
+          <label class="field">
+            <span>Cart size</span>
+            <select id="cart-family" data-persist>
+              <option value="">Select Väderstad PD size</option>
+              <option value="400">Precision Delivery 400</option>
+              <option value="680">Precision Delivery 680</option>
+              <option value="820">Precision Delivery 820</option>
+              <option value="910">Precision Delivery 910</option>
+              <option value="1000">Precision Delivery 1000</option>
+              <option value="1350">Precision Delivery 1350</option>
+              <option value="other">Other air cart</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Cart identifier (optional)</span>
+            <input id="cart-model" data-persist type="text" autocomplete="off" placeholder="Enter from cart plate">
+          </label>
+        </div>
+        <label class="field optional-bin-field" id="optional-bin-field" hidden>
+          <span>Optional Bin 5</span>
+          <select id="use-optional-bin" data-persist>
+            <option value="no">Not fitted</option>
+            <option value="yes">Include optional bin 5</option>
+          </select>
+        </label>
+        <p class="model-capacity-note" id="model-capacity-note" aria-live="polite">Choose a listed cart size to load its published nominal volumes, or choose Other air cart to enter all bin capacities manually.</p>
+      </section>
+
+      <details class="published-table">
+        <summary>Published bin volumes by cart size</summary>
+        <div class="table-scroll" tabindex="0" aria-label="Scrollable Väderstad cart capacity table">
+          <table>
+            <caption>Väderstad Precision Delivery Air Cart technical data (litres as published)</caption>
+            <thead>
+              <tr><th scope="col">Bin volume (L)</th><th scope="col">400</th><th scope="col">680</th><th scope="col">820</th><th scope="col">910</th><th scope="col">1000</th><th scope="col">1350</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Total volume (L)</th><td>12,685–14,095</td><td>23,900</td><td>28,900</td><td>32,068</td><td>35,200</td><td>47,572</td></tr>
+              <tr><th scope="row">Bin 1 (L)</th><td>1,410</td><td>2,115</td><td>2,115</td><td>3,277</td><td>2,115</td><td>3,277</td></tr>
+              <tr><th scope="row">Bin 2 (L)</th><td>4,230</td><td>5,600</td><td>10,600</td><td>7,506</td><td>17,000</td><td>22,975</td></tr>
+              <tr><th scope="row">Bin 3 (L)</th><td>5,285</td><td>5,600</td><td>10,600</td><td>7,506</td><td>10,600</td><td>13,849</td></tr>
+              <tr><th scope="row">Bin 4 (L)</th><td>3,170</td><td>10,600</td><td>5,600</td><td>13,849</td><td>5,600</td><td>7,505</td></tr>
+              <tr><th scope="row">Optional Bin 5 (L)</th><td>—</td><td>—</td><td>2,466</td><td>—</td><td>2,466</td><td>2,819</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="source-credit">Volumes are taken from the linked official table. The printed total row may differ from summed bin volumes because of published rounding and optional-bin configurations.</p>
+      </details>
+
+      <section class="worksheet-section product-planner">
+        <div class="section-heading">
+          <div>
+            <h2>Products to seed</h2>
+            <p>Add every product in the cart. The optimizer assigns bins to maximize the shared run limit.</p>
+          </div>
+          <button class="button button-dark" id="add-product" type="button">+ Add product</button>
+        </div>
+        <div id="product-list" class="product-list"></div>
+        <label class="field chain-field">
+          <span>Chained-bin planning</span>
+          <select id="chain-bins" data-persist>
+            <option value="no">Off · one bin per product</option>
+            <option value="yes">On · same product may use multiple bins</option>
+          </select>
+        </label>
+        <p class="assumption-note chain-note"><strong>Planning assumption</strong><span>Chained mode groups bins holding the same product to increase the run limit. Use it only if your cart's metering and plumbing can feed that product from those bins. The published capacity table does not verify bin-chain compatibility or fill time in minutes.</span></p>
+      </section>
+
+      <section class="worksheet-section manual-bin-setup" id="manual-bin-setup" hidden>
+        <div class="section-heading">
+          <div>
+            <h2>Manual bin capacities</h2>
+            <p>Enter the usable volume for each bin from the exact cart documentation.</p>
+          </div>
+          <button class="button button-dark" id="add-bin" type="button">+ Add bin</button>
+        </div>
+        <div id="bin-list" class="bin-list"></div>
+      </section>
+
+      <section class="worksheet-section run-estimate">
+        <div class="section-heading">
+          <div>
+            <h2>Optimized run estimate</h2>
+            <p>Run limit is set by the product that runs out first.</p>
+          </div>
+        </div>
+        <div class="control-row">
+          <label class="field">
+            <span class="field-topline"><span>Field area</span><button class="unit-toggle" id="bin-area-unit" type="button" data-unit-toggle data-units="ac|ha" data-converts="bin-field-area:area" data-persist value="ac">ac</button></span>
+            <input id="bin-field-area" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Enter field area">
+          </label>
+        </div>
+        <div id="bin-results" class="bin-results" aria-live="polite">
+          <p>Enter complete data for at least one bin to calculate a run limit.</p>
+        </div>
+      </section>
+      <p class="source-credit">Capacity source: <a href="https://www.vaderstad.com/ca-en/drilling/air-carts/precision-delivery-air-cart" target="_blank" rel="noreferrer">Väderstad Precision Delivery Air Cart · technical data table</a>. Each product's bulk density and fill factor are user inputs. Refill count excludes the initial load.</p>
+    </section>
+
+    <section id="panel-field" class="tab-panel" role="tabpanel" aria-labelledby="tab-field" hidden>
+      <div class="screen-heading">
+        <div>
+          <h1>Field</h1>
+          <p>Estimate capacity, field time and meter settings.</p>
+        </div>
+      </div>
+
+      <div class="worksheet-grid field-grid">
+        <section class="worksheet-section field-capacity-tool">
+          <div class="section-heading">
+            <div>
+              <h2>Field capacity</h2>
+              <p>Theoretical rate uses effective working width and travel speed.</p>
+            </div>
+          </div>
+          <div class="control-row">
+            <label class="field">
+              <span class="field-topline"><span>Working width</span><button class="unit-toggle" id="field-width-unit" type="button" data-unit-toggle data-units="ft|m" data-converts="field-width:length" data-persist value="ft">ft</button></span>
+              <input id="field-width" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Enter width">
+            </label>
+            <label class="field">
+              <span class="field-topline"><span>Travel speed</span><button class="unit-toggle" id="field-speed-unit" type="button" data-unit-toggle data-units="mph|km/h" data-converts="field-speed:speed" data-persist value="mph">mph</button></span>
+              <input id="field-speed" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Enter speed">
+            </label>
+          </div>
+          <div class="result-strip" aria-live="polite">
+            <span>Theoretical field capacity</span>
+            <strong id="theoretical-result">Enter width and speed</strong>
+          </div>
+          <p class="formula-note">No overlap, point rows, stopping, or field losses are included in the theoretical rate.</p>
+        </section>
+
+        <details class="worksheet-section secondary-tool">
+          <summary class="tool-summary"><span>Field time with turns and refills</span><span class="disclosure-label">Open</span></summary>
+          <p class="tool-intro">Add pass length, turn time and refill delays to the travel estimate.</p>
+          <div class="control-row">
+            <label class="field">
+              <span class="field-topline"><span>Field area</span><button class="unit-toggle" id="field-area-unit" type="button" data-unit-toggle data-units="ac|ha" data-converts="field-area:area,refill-interval:area" data-persist value="ac">ac</button></span>
+              <input id="field-area" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Enter area">
+            </label>
+            <label class="field">
+              <span class="field-topline"><span>Pass length</span><button class="unit-toggle" id="pass-length-unit" type="button" data-unit-toggle data-units="ft|m" data-converts="pass-length:length" data-persist value="ft">ft</button></span>
+              <input id="pass-length" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Enter straight run">
+            </label>
+          </div>
+          <div class="control-row">
+            <label class="field">
+              <span>Turn time per pass (minutes)</span>
+              <input id="turn-minutes" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Enter turn time">
+            </label>
+            <label class="field">
+              <span id="refill-interval-label">Refill every (ac)</span>
+              <input id="refill-interval" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Optional">
+            </label>
+          </div>
+          <div class="control-row">
+            <label class="field">
+              <span>Refill delay (minutes)</span>
+              <input id="refill-minutes" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Optional">
+            </label>
+            <div class="assumption-note">
+              <strong>Field average</strong>
+              <span>Turns are estimated from field area and area per pass; refill stops start after the initial fill.</span>
+            </div>
+          </div>
+          <div class="result-strip result-strip-stack" aria-live="polite">
+            <span>Effective field capacity</span>
+            <strong id="effective-result">Enter field and downtime values</strong>
+            <small id="field-time-result"></small>
+          </div>
+        </details>
+
+        <details class="worksheet-section secondary-tool catch-test">
+          <summary class="tool-summary"><span>Meter catch test</span><span class="disclosure-label">Open</span></summary>
+          <p class="tool-intro">Weigh a measured area of product and compare it with the target.</p>
+          <div class="control-row">
+            <label class="field">
+              <span class="field-topline"><span>Target rate</span><button class="unit-toggle" id="catch-unit" type="button" data-unit-toggle data-units="lb/ac|kg/ha" data-converts="catch-target:rate-mass,catch-area:area,catch-mass:mass" data-persist value="lb/ac">lb/ac</button></span>
+              <input id="catch-target" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Enter target">
+            </label>
+          </div>
+          <div class="control-row">
+            <label class="field">
+              <span id="catch-area-label">Sample area (acres)</span>
+              <input id="catch-area" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Enter measured area">
+            </label>
+            <label class="field">
+              <span id="catch-mass-label">Caught product (lb)</span>
+              <input id="catch-mass" data-persist inputmode="decimal" type="number" min="0" step="any" placeholder="Weigh the catch">
+            </label>
+          </div>
+          <div class="result-strip result-strip-stack" aria-live="polite">
+            <span>Measured application rate</span>
+            <strong id="catch-measured-result">Enter test values</strong>
+            <small id="catch-adjustment-result"></small>
+          </div>
+          <p class="formula-note">Adjustment % = target ÷ measured × 100. A result above 100% indicates a higher meter setting mathematically; follow the meter's instructions and retest.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>Independent field estimates. Verify specifications, rates and settings with the product label, operator's manual and an on-machine check.</p>
+    <p class="storage-note" id="storage-note">Entries are saved only in this browser on this device.</p>
+  </footer>
+
+  <nav class="bottom-nav" aria-label="Calculator pages" role="tablist">
+    <button id="tab-rates" class="nav-tab is-active" type="button" role="tab" aria-controls="panel-rates" aria-selected="true">
+      Rates
+    </button>
+    <button id="tab-bins" class="nav-tab" type="button" role="tab" aria-controls="panel-bins" aria-selected="false" tabindex="-1">
+      Bins
+    </button>
+    <button id="tab-field" class="nav-tab" type="button" role="tab" aria-controls="panel-field" aria-selected="false" tabindex="-1">
+      Field
+    </button>
+  </nav>
+</body>
+</html>
